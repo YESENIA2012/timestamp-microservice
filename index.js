@@ -28,7 +28,7 @@ var listener = app.listen(process.env.PORT, function () {
   console.log("Your app is listening on port " + listener.address().port);
 });
 
-app.get(
+/* app.get(
   "api/2015-12-25",
   (req, res, next) => {
     req.time = new Date().toString();
@@ -37,4 +37,8 @@ app.get(
   (req, res) => {
     res.json({ time: req.time });
   }
-);
+); */
+
+app.get("/api/nueva", function (req, res) {
+  res.json({ name: "yesenia" });
+});
