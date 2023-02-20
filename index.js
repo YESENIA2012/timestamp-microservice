@@ -25,21 +25,23 @@ app.get("/api/1451001600000", (req, res) => {
 
 app.get("/api/:date?", (req, res) => {
   const dateEntered = req.params.date;
+  req.time = new Date(dateEntered).toUTCString();
+
+  if (req.time == "Invalid Date" && dateEntered !== undefined) {
+    return res.json({ error: "Invalid Date" });
+  }
 
   if (dateEntered === undefined) {
-    const currentTime = new Date();
-    const currentHour = currentTime.toLocaleTimeString();
+    req.millisecondsCurrent = new Date().getTime();
+    req.timeCurrent = new Date().toUTCString();
+    return res.json({ unix: req.millisecondsCurrent, utc: req.timeCurrent });
+  }
 
-    return res.json({ unix: currentHour });
-  } else if (dateEntered !== undefined && dateEntered) {
-    req.time = new Date(dateEntered).toUTCString();
+  if (dateEntered !== undefined && dateEntered) {
     req.milliseconds = new Date(dateEntered).getTime();
-
-    return res.json({ unix: req.milliseconds, utc: `${req.time}` });
-  } else if (isNaN(dateEntered) && dateEntered !== undefined) {
-    return res.json({ error: "Invalid Date" });
+    return res.json({ unix: req.milliseconds, utc: req.time });
   }
 });
 
 app.listen(3000);
-console.log("app escuchada en el puerto 3000");
+console.log("app app is listening on port 3000");
