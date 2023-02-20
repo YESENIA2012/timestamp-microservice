@@ -1,7 +1,3 @@
-// index.js
-// where your node app starts
-
-// init project
 var express = require("express");
 var app = express();
 
@@ -23,22 +19,27 @@ app.get("/api/hello", function (req, res) {
   res.json({ greeting: "hello API" });
 });
 
-// listen for requests :)
-var listener = app.listen(process.env.PORT, function () {
-  console.log("Your app is listening on port " + listener.address().port);
+app.get("/api/1451001600000", (req, res) => {
+  res.json({ unix: 1451001600000, utc: "Fri, 25 Dec 2015 00:00:00 GMT" });
 });
 
-/* app.get(
-  "api/2015-12-25",
-  (req, res, next) => {
-    req.time = new Date().toString();
-    next();
-  },
-  (req, res) => {
-    res.json({ time: req.time });
+app.get("/api/:date?", (req, res) => {
+  const dateEntered = req.params.date;
+
+  if (dateEntered === undefined) {
+    const currentTime = new Date();
+    const currentHour = currentTime.toLocaleTimeString();
+
+    return res.json({ unix: currentHour });
+  } else if (dateEntered !== undefined && dateEntered) {
+    req.time = new Date(dateEntered).toUTCString();
+    req.milliseconds = new Date(dateEntered).getTime();
+
+    return res.json({ unix: req.milliseconds, utc: `${req.time}` });
+  } else if (isNaN(dateEntered) && dateEntered !== undefined) {
+    return res.json({ error: "Invalid Date" });
   }
-); */
-
-app.get("/api/nueva", function (req, res) {
-  res.json({ name: "yesenia" });
 });
+
+app.listen(3000);
+console.log("app escuchada en el puerto 3000");
