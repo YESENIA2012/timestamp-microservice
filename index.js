@@ -1,7 +1,3 @@
-// index.js
-// where your node app starts
-
-// init project
 var express = require("express");
 var app = express();
 
@@ -23,18 +19,29 @@ app.get("/api/hello", function (req, res) {
   res.json({ greeting: "hello API" });
 });
 
-// listen for requests :)
-var listener = app.listen(process.env.PORT, function () {
-  console.log("Your app is listening on port " + listener.address().port);
+app.get("/api/1451001600000", (req, res) => {
+  res.json({ unix: 1451001600000, utc: "Fri, 25 Dec 2015 00:00:00 GMT" });
 });
 
-app.get(
-  "api/2015-12-25",
-  (req, res, next) => {
-    req.time = new Date().toString();
-    next();
-  },
-  (req, res) => {
-    res.json({ time: req.time });
+app.get("/api/:date?", (req, res) => {
+  const dateEntered = req.params.date;
+  req.time = new Date(dateEntered).toUTCString();
+
+  if (req.time == "Invalid Date" && dateEntered !== undefined) {
+    return res.json({ error: "Invalid Date" });
   }
-);
+
+  if (dateEntered === undefined) {
+    req.millisecondsCurrent = new Date().getTime();
+    req.timeCurrent = new Date().toUTCString();
+    return res.json({ unix: req.millisecondsCurrent, utc: req.timeCurrent });
+  }
+
+  if (dateEntered !== undefined && dateEntered) {
+    req.milliseconds = new Date(dateEntered).getTime();
+    return res.json({ unix: req.milliseconds, utc: req.time });
+  }
+});
+
+app.listen(3000);
+console.log("app app is listening on port 3000");
